@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException, NotFoundException, Logger } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 
@@ -9,56 +9,55 @@ export class PostService {
   constructor(private prisma: PrismaService) {}
 
   async create(createPostDto: CreatePostDto) {
-    this.logger.log('Ejecutando create de Post Service')
     try {
+      this.logger.log('Post create is running')
       const post = await this.prisma.post.create({data: createPostDto});
-      this.logger.log('Create se ejecuto correctamente')
+      this.logger.log('Post create has been successfully executed')
       return post;
     } catch (error) {
-      this.logger.error('No se pudo crear el registro')
+      this.logger.error('Internal server error occurred')
       throw new InternalServerErrorException(error)
     }
   }
 
   async findAll() {
-    this.logger.log('Ejecutando getAll de Post Service')
-    const post = await this.prisma.post.findMany();
-    this.logger.log('findAll ejecutado correctamente')
-    return post;
+    try {
+      this.logger.log('Post findAll is running')
+      const post = await this.prisma.post.findMany();
+      return post;      
+    } catch (error) {
+      this.logger.error('Internal server error occurred')
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async findOne(id: number) {
-    this.logger.log('Ejecutando findOne de Post Service')
+    this.logger.log('Post findOne is running')
     const post = await this.prisma.post.findUnique({where:{id}});
     if(!post) {
-      this.logger.error(`id ${id} not found de prueba logger`)
+      this.logger.error(`id ${id} not found`)
       throw new NotFoundException(`id ${id} not found`);
     }
-    this.logger.log('Ejecutando con exito findOne de Post Service')
+    this.logger.log('Post findOne has been successfully executed')
     return post;
   }
 
   async update(id: number, updatePostDto: UpdatePostDto) {
-    this.logger.log('Ejecutando update de Post Service')
-    const postId = await this.prisma.post.findUnique({where: {id}});
-    if(!postId) {
-      this.logger.error('id ${id} not found, message logger')
-      throw new NotFoundException(`id ${id} not found`);
-    }
-    const post = await this.prisma.post.update({where:{id}, data: updatePostDto})
-    this.logger.log('Update fue ejecutado correctamente con messaje logger')
+    this.logger.warn('Post update is running');
+    await this.findOne(id);
+    const post = await this.prisma.post.update({
+      where: { id },
+      data: updatePostDto,
+    });
+    this.logger.log('Post update has been successfully executed');
     return post;
   }
 
   async remove(id: number) {
-    this.logger.log('Ejecutando Remove de Post Service')
-    const postId = await this.prisma.post.findUnique({where: {id}});
-    if(!postId) {
-      this.logger.error('id ${id} not found, message logger')
-      throw new NotFoundException(`id ${id} not found`);
-    }
-    const post = await this.prisma.post.delete({where: {id} })
-    this.logger.log('Remove fue ejecutado correctamente')
+    this.logger.warn('Post remove is running');
+    await this.findOne(id);
+    const post = await this.prisma.post.delete({ where: { id } });
+    this.logger.log('Post remove has been successfully executed');
     return post;
   }
 }
