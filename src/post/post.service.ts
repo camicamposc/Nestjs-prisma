@@ -35,7 +35,7 @@ export class PostService {
     this.logger.log('Post findOne is running')
     const post = await this.prisma.post.findUnique({where:{id}});
     if(!post) {
-      this.logger.error(`id ${id} not found`)
+      // this.logger.error(`id ${id} not found`)
       throw new NotFoundException(`id ${id} not found`);
     }
     this.logger.log('Post findOne has been successfully executed')

@@ -15,4 +15,9 @@ export const user = {
     id: 1,
     email: "Camila@correo.com",
     name: "Camila"
+};
+
+export class createUser {
+    email: string;
+    name: string;
 }

@@ -36,7 +36,7 @@ export class UserService {
     this.logger.warn('User findOne is running')
     const user = await this.prisma.user.findUnique({ where: { id } });
     if(!user) {
-      this.logger.error(`id ${id} not found`)
+      // this.logger.error(`id ${id} not found`)
       throw new NotFoundException(`id ${id} not found`);
     }
     this.logger.log('User findOne has been successfully executed')
